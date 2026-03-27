@@ -76,12 +76,12 @@ export function AvailabilityForm({ initialAvailability }: { initialAvailability:
   }
 
   return (
-    <Card>
+    <Card className="animate-fade-up-delay border-[rgba(66,133,244,0.12)]">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-ink">Weekly availability</h2>
+          <h2 className="text-xl font-semibold text-ink">Host availability settings</h2>
           <p className="mt-1 text-sm text-slate-600">
-            Set the windows people can book. All times are stored in UTC and localized in the browser.
+            This is your internal dashboard area. Set the windows guests can book from your public page.
           </p>
         </div>
         <Button variant="secondary" onClick={saveAvailability} disabled={loading}>
@@ -91,7 +91,7 @@ export function AvailabilityForm({ initialAvailability }: { initialAvailability:
 
       <div className="space-y-4">
         {grouped.map((group) => (
-          <div key={group.index} className="rounded-2xl border border-slate-200 p-4">
+          <div key={group.index} className="rounded-3xl border border-[rgba(66,133,244,0.12)] bg-white/90 p-4">
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-ink">{group.name}</h3>

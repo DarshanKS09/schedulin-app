@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { AvailabilityForm } from "@/components/availability-form";
 import { BookingList } from "@/components/booking-list";
+import { CopyBookingLinkButton } from "@/components/copy-booking-link-button";
 import { LogoutButton } from "@/components/logout-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -97,7 +98,20 @@ export default async function DashboardPage({
           </div>
           <div className="rounded-3xl border border-slate-200 bg-white/90 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Booking link</p>
-            <p className="mt-2 truncate text-sm font-semibold text-ink">/book/{user.username}</p>
+            <div className="mt-2 flex flex-col gap-3">
+              <p className="break-all text-sm font-semibold text-ink">{bookingUrl}</p>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  className="inline-flex items-center justify-center rounded-2xl bg-[#4285F4] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(66,133,244,0.2)] transition duration-200 hover:-translate-y-0.5 hover:bg-[#3b78e7]"
+                  href={bookingUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Open link
+                </a>
+                <CopyBookingLinkButton bookingUrl={bookingUrl} />
+              </div>
+            </div>
           </div>
         </div>
       </Card>
