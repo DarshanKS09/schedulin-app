@@ -1,11 +1,8 @@
 import Link from "next/link";
 
 import { Card } from "@/components/ui/card";
-import { getSessionFromCookies } from "@/lib/auth";
 
-export default async function HomePage() {
-  const session = await getSessionFromCookies();
-
+export default function HomePage() {
   return (
     <div className="grid gap-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-center">
       <section className="animate-fade-up max-w-3xl">
@@ -22,18 +19,16 @@ export default async function HomePage() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             className="rounded-2xl bg-ink px-6 py-3.5 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(15,23,42,0.18)] hover:bg-slate-800"
-            href={session ? "/dashboard" : "/auth/register"}
+            href="/auth/register"
           >
-            {session ? "Open your dashboard" : "Create your account"}
+            Create your account
           </Link>
-          {!session ? (
-            <Link
-              className="rounded-2xl border border-slate-200 bg-white/85 px-6 py-3.5 text-sm font-semibold text-ink shadow-sm hover:bg-white"
-              href="/auth/login"
-            >
-              Sign in
-            </Link>
-          ) : null}
+          <Link
+            className="rounded-2xl border border-slate-200 bg-white/85 px-6 py-3.5 text-sm font-semibold text-ink shadow-sm hover:bg-white"
+            href="/auth/login"
+          >
+            Sign in
+          </Link>
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
