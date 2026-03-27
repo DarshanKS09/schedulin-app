@@ -12,9 +12,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ref={ref}
       className={cn(
         "inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-semibold transition duration-200 disabled:cursor-not-allowed disabled:opacity-60",
-        variant === "primary" && "bg-[#4285F4] text-white shadow-[0_12px_24px_rgba(66,133,244,0.28)] hover:-translate-y-0.5 hover:bg-[#3b78e7]",
-        variant === "secondary" && "bg-[#34A853] text-white shadow-[0_12px_24px_rgba(52,168,83,0.24)] hover:-translate-y-0.5 hover:bg-[#2d9549]",
-        variant === "ghost" && "bg-white/80 text-ink ring-1 ring-[rgba(66,133,244,0.14)] hover:-translate-y-0.5 hover:bg-[#F8FAFF]",
+        variant === "primary" && "bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-[0_12px_24px_rgba(99,102,241,0.28)] hover:scale-105 hover:shadow-md",
+        variant === "secondary" && "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_12px_24px_rgba(139,92,246,0.24)] hover:scale-105 hover:shadow-md",
+        variant === "ghost" && "bg-white/80 text-ink ring-1 ring-[rgba(99,102,241,0.14)] hover:scale-105 hover:bg-indigo-50 hover:shadow-md",
         className,
       )}
       {...props}

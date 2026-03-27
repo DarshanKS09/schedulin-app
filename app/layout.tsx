@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import Link from "next/link";
 
 import { getSessionFromCookies } from "@/lib/auth";
+import { LogoutButton } from "@/components/logout-button";
 
 import "./globals.css";
 
@@ -46,15 +47,18 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                   Home
                 </Link>
                 {session ? (
-                  <Link className="rounded-full bg-ink px-4 py-2 font-medium text-white hover:bg-slate-800" href="/dashboard">
-                    Dashboard
-                  </Link>
+                  <>
+                    <Link className="rounded-full bg-[#4285F4] px-4 py-2 font-medium text-white shadow-[0_12px_24px_rgba(66,133,244,0.22)] hover:bg-[#3b78e7]" href="/dashboard">
+                      Dashboard
+                    </Link>
+                    <LogoutButton className="rounded-full" />
+                  </>
                 ) : (
                   <>
                     <Link className="rounded-full px-4 py-2 hover:bg-white/70 hover:text-ink" href="/auth/login">
                       Login
                     </Link>
-                    <Link className="rounded-full bg-ink px-4 py-2 font-medium text-white hover:bg-slate-800" href="/auth/register">
+                    <Link className="rounded-full bg-[#4285F4] px-4 py-2 font-medium text-white shadow-[0_12px_24px_rgba(66,133,244,0.22)] hover:bg-[#3b78e7]" href="/auth/register">
                       Register
                     </Link>
                   </>

@@ -4,8 +4,7 @@ import { redirect } from "next/navigation";
 import { AvailabilityForm } from "@/components/availability-form";
 import { BookingList } from "@/components/booking-list";
 import { CopyBookingLinkButton } from "@/components/copy-booking-link-button";
-import { LogoutButton } from "@/components/logout-button";
-import { Button } from "@/components/ui/button";
+import { GoogleCalendarMenu } from "@/components/google-calendar-menu";
 import { Card } from "@/components/ui/card";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -73,17 +72,7 @@ export default async function DashboardPage({
             >
               Open booking page
             </a>
-            <a href="/api/google/connect">
-              <Button variant="ghost">
-                {user.googleRefreshToken ? "Switch Google Calendar Account" : "Connect Google Calendar"}
-              </Button>
-            </a>
-            {user.googleRefreshToken ? (
-              <a href="/api/google/disconnect">
-                <Button variant="ghost">Disconnect Google Calendar</Button>
-              </a>
-            ) : null}
-            <LogoutButton />
+            <GoogleCalendarMenu connected={Boolean(user.googleRefreshToken)} />
           </div>
         </div>
 
