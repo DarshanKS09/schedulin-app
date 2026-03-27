@@ -2,16 +2,22 @@
 
 import { useState } from "react";
 
+import { SKIP_EXIT_LOGOUT_KEY } from "@/components/auto-logout-monitor";
 import { Button } from "@/components/ui/button";
 
 export function GoogleCalendarMenu({ connected }: { connected: boolean }) {
   const [open, setOpen] = useState(false);
 
+  function beginGoogleConnect() {
+    window.sessionStorage.setItem(SKIP_EXIT_LOGOUT_KEY, "1");
+    window.location.href = "/api/google/connect";
+  }
+
   if (!connected) {
     return (
-      <a href="/api/google/connect">
-        <Button variant="ghost">Connect Google Calendar</Button>
-      </a>
+      <Button onClick={beginGoogleConnect} type="button" variant="ghost">
+        Connect Google Calendar
+      </Button>
     );
   }
 
@@ -34,11 +40,9 @@ export function GoogleCalendarMenu({ connected }: { connected: boolean }) {
           <p className="mt-1 text-sm text-slate-600">Use this menu to switch accounts or disconnect calendar sync.</p>
 
           <div className="mt-4 flex flex-col gap-2">
-            <a href="/api/google/connect">
-              <Button className="w-full" type="button" variant="secondary">
-                Switch account
-              </Button>
-            </a>
+            <Button className="w-full" onClick={beginGoogleConnect} type="button" variant="secondary">
+              Switch account
+            </Button>
             <a href="/api/google/disconnect">
               <Button className="w-full" type="button" variant="ghost">
                 Disconnect

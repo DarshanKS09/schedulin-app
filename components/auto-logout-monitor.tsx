@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 const LAST_ACTIVITY_KEY = "echo_last_activity_at";
+const SKIP_EXIT_LOGOUT_KEY = "echo_skip_exit_logout_once";
 const INACTIVITY_LIMIT_MS = 5 * 60 * 1000;
 const CHECK_INTERVAL_MS = 15 * 1000;
 
@@ -26,6 +27,11 @@ export function AutoLogoutMonitor() {
 
     function sendLogoutBeacon() {
       if (loggingOutRef.current) {
+        return;
+      }
+
+      if (window.sessionStorage.getItem(SKIP_EXIT_LOGOUT_KEY) === "1") {
+        window.sessionStorage.removeItem(SKIP_EXIT_LOGOUT_KEY);
         return;
       }
 
@@ -113,3 +119,5 @@ export function AutoLogoutMonitor() {
 
   return null;
 }
+
+export { SKIP_EXIT_LOGOUT_KEY };
