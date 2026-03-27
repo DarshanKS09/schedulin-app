@@ -3,9 +3,8 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
-import { dispatchAuthLoader } from "@/components/auth-transition-loader";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,7 +15,51 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [progressLabel, setProgressLabel] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const requestStartedAtRef = useRef<number | null>(null);
+  const routeStartedAtRef = useRef<number | null>(null);
+  const progressPhaseRef = useRef<"idle" | "request" | "route">("idle");
+
+  useEffect(() => {
+    if (!loading) {
+      progressPhaseRef.current = "idle";
+      requestStartedAtRef.current = null;
+      routeStartedAtRef.current = null;
+      setProgress(0);
+      setProgressLabel(null);
+      return;
+    }
+
+    let animationFrame = 0;
+
+    const tick = () => {
+      const now = performance.now();
+
+      setProgress((current) => {
+        if (progressPhaseRef.current === "request" && requestStartedAtRef.current !== null) {
+          const elapsed = now - requestStartedAtRef.current;
+          const target = Math.min(76, 10 + elapsed / 42);
+          return target > current ? target : current;
+        }
+
+        if (progressPhaseRef.current === "route" && routeStartedAtRef.current !== null) {
+          const elapsed = now - routeStartedAtRef.current;
+          const target = Math.min(96, 78 + elapsed / 85);
+          return target > current ? target : current;
+        }
+
+        return current;
+      });
+
+      animationFrame = window.requestAnimationFrame(tick);
+    };
+
+    animationFrame = window.requestAnimationFrame(tick);
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [loading]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,12 +68,10 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
     const nextPath = searchParams.get("next");
     const destination = nextPath?.startsWith("/") ? nextPath : "/dashboard";
-
-    dispatchAuthLoader({
-      type: "start",
-      destination,
-      label: mode === "register" ? "Creating your workspace" : "Signing you in",
-    });
+    requestStartedAtRef.current = performance.now();
+    progressPhaseRef.current = "request";
+    setProgress(10);
+    setProgressLabel(mode === "register" ? "Creating your workspace" : "Signing you in");
 
     const formData = new FormData(event.currentTarget);
     const payload =
@@ -61,13 +102,12 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         throw new Error(result.error || "Unable to continue.");
       }
 
-      dispatchAuthLoader({ type: "resolved" });
+      progressPhaseRef.current = "route";
+      routeStartedAtRef.current = performance.now();
       router.push(destination as Route);
       router.refresh();
     } catch (submitError) {
-      dispatchAuthLoader({ type: "error" });
       setError(submitError instanceof Error ? submitError.message : "Unable to continue.");
-    } finally {
       setLoading(false);
     }
   }
@@ -107,6 +147,21 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           <h2 className="mt-2 text-3xl font-bold text-ink">
             {mode === "register" ? "Start taking bookings" : "Sign in to your dashboard"}
           </h2>
+
+          {loading && progressLabel ? (
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-indigo-600">
+                <span>{progressLabel}</span>
+                <span>{Math.round(progress)}%</span>
+              </div>
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-indigo-50">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 transition-[width] duration-150 ease-linear"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
