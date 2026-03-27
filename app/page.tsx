@@ -13,7 +13,7 @@ export default function HomePage() {
           Secure bookings, clearer availability, and a dashboard that stays private until login.
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
-          Echo Scheduler gives teams a polished booking flow, protected access control, Google Calendar sync, and dependable UTC-first scheduling without the clutter.
+          Slotify gives teams a polished booking flow, protected access control, Google Calendar sync, and dependable UTC-first scheduling without the clutter.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">

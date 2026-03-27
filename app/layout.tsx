@@ -14,7 +14,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Echo Scheduler",
+  title: "Slotify",
   description: "A production-ready scheduling platform built with Next.js, Prisma, PostgreSQL, and Google Calendar.",
 };
 
@@ -31,11 +31,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               <div className="flex items-center gap-4">
                 <Link className="inline-flex items-center gap-3" href="/">
                   <span className="pulse-soft inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-ink text-sm font-bold tracking-[0.24em] text-white">
-                    ES
+                    SL
                   </span>
                   <span>
                     <span className="block text-base font-semibold tracking-tight text-[color:var(--ink-strong)]">
-                      Echo Scheduler
+                      Slotify
                     </span>
                     <span className="block text-xs uppercase tracking-[0.28em] text-slate-500">
                       Booking operations cockpit
