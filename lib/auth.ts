@@ -3,8 +3,7 @@ import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 
 import { db } from "@/lib/db";
-
-const SESSION_COOKIE = "echo_session";
+import { SESSION_COOKIE } from "@/lib/session";
 const encoder = new TextEncoder();
 
 type SessionPayload = {
@@ -101,5 +100,3 @@ export async function requireUser() {
     },
   });
 }
-
-export { SESSION_COOKIE };

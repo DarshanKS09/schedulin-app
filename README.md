@@ -35,12 +35,12 @@ prisma/
 
 ## Environment variables
 
-Copy `.env.example` to `.env` and fill in the values:
+Copy `.env.example` to `.env` for local work, or use `.env.production.example` for deployment:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/echo_scheduler?schema=public"
 DIRECT_URL="postgresql://postgres:postgres@localhost:5432/echo_scheduler?schema=public"
-JWT_SECRET="replace-with-a-long-random-secret"
+JWT_SECRET="replace-with-a-long-random-secret-at-least-32-chars"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 GOOGLE_CLIENT_ID=""
@@ -58,6 +58,21 @@ DIRECT_URL="postgresql://USER:PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres?
 ```
 
 The pooled `DATABASE_URL` needs `pgbouncer=true` for Prisma, otherwise dashboard queries can fail with errors like `prepared statement "... does not exist"`.
+
+For production, set:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:6543/postgres?pgbouncer=true&connection_limit=1&sslmode=require"
+DIRECT_URL="postgresql://USER:PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres?sslmode=require"
+JWT_SECRET="replace-with-a-long-random-secret-at-least-32-chars"
+NEXT_PUBLIC_APP_URL="https://your-domain.com"
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GOOGLE_REDIRECT_URI="https://your-domain.com/api/google/callback"
+OPENAI_API_KEY=""
+```
+
+`NEXT_PUBLIC_APP_URL` should be your final public domain with `https`, and `GOOGLE_REDIRECT_URI` must exactly match the redirect URI configured in Google Cloud Console.
 
 ## Local setup
 
@@ -104,6 +119,14 @@ npx prisma migrate deploy
 ```
 
 5. Deploy the project to Vercel.
+
+Deployment checklist:
+
+- Add `DATABASE_URL`, `DIRECT_URL`, `JWT_SECRET`, `NEXT_PUBLIC_APP_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI` in the hosting provider.
+- In Google Cloud Console, add `https://your-domain.com/api/google/callback` as an authorized redirect URI.
+- Use a strong `JWT_SECRET` with at least 32 random characters.
+- Ensure the production domain uses HTTPS so secure cookies work correctly.
+- Run `prisma migrate deploy` against the production database before serving traffic.
 
 ## API endpoints
 

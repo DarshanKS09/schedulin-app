@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-import { SESSION_COOKIE } from "@/lib/auth";
+import { SESSION_COOKIE } from "@/lib/session";
 
 const protectedPaths = ["/dashboard", "/api/availability", "/api/google/connect", "/api/google/disconnect"];
 const encoder = new TextEncoder();
