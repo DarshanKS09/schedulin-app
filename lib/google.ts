@@ -3,11 +3,14 @@ import { google } from "googleapis";
 import { db } from "@/lib/db";
 import { getBaseUrl } from "@/lib/utils";
 
+export function getGoogleRedirectUri() {
+  return process.env.GOOGLE_REDIRECT_URI ?? `${getBaseUrl()}/api/google/callback`;
+}
+
 function getOAuthClient() {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const redirectUri =
-    process.env.GOOGLE_REDIRECT_URI ?? `${getBaseUrl()}/api/google/callback`;
+  const redirectUri = getGoogleRedirectUri();
 
   if (!clientId || !clientSecret) {
     throw new Error("Google OAuth credentials are not configured.");
@@ -16,15 +19,17 @@ function getOAuthClient() {
   return new google.auth.OAuth2(clientId, clientSecret, redirectUri);
 }
 
-export function getGoogleAuthUrl() {
+export function getGoogleAuthUrl(state?: string) {
   const client = getOAuthClient();
 
   return client.generateAuthUrl({
     access_type: "offline",
-    // Force Google's account chooser so reconnecting does not silently reuse
-    // the browser's current primary Google session.
-    prompt: "select_account consent",
+    include_granted_scopes: false,
+    // Force Google's account chooser instead of silently reusing the browser's
+    // currently active Google session.
+    prompt: "select_account",
     scope: ["https://www.googleapis.com/auth/calendar.events"],
+    state,
   });
 }
 
@@ -42,6 +47,18 @@ export async function saveGoogleTokensForUser(userId: string, tokens: Awaited<Re
       googleRefreshToken: tokens.refresh_token ?? undefined,
       googleTokenExpiry: tokens.expiry_date ? new Date(tokens.expiry_date) : undefined,
       googleCalendarId: "primary",
+    },
+  });
+}
+
+export async function disconnectGoogleCalendar(userId: string) {
+  await db.user.update({
+    where: { id: userId },
+    data: {
+      googleAccessToken: null,
+      googleRefreshToken: null,
+      googleTokenExpiry: null,
+      googleCalendarId: null,
     },
   });
 }

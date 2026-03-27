@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getGoogleRedirectUri } from "@/lib/google";
 import { getBaseUrl } from "@/lib/utils";
 
 export default async function DashboardPage({
@@ -40,51 +41,89 @@ export default async function DashboardPage({
   ]);
 
   const bookingUrl = `${getBaseUrl()}/book/${user.username}`;
+  const googleRedirectUri = getGoogleRedirectUri();
 
   return (
     <div className="space-y-8">
-      <Card className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand">Dashboard</p>
-          <h1 className="mt-2 text-3xl font-bold text-ink">Welcome back, {user.name}</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Share your booking page at{" "}
-            <Link className="font-semibold text-brand" href={`/book/${user.username}`}>
-              /book/{user.username}
-            </Link>
-          </p>
+      <Card className="glass-panel-strong animate-fade-up overflow-hidden rounded-[32px] border-white/70 p-7 shadow-[0_20px_80px_rgba(15,23,42,0.08)]">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+          <div className="flex-1">
+            <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand">Private dashboard</p>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-[color:var(--ink-strong)] sm:text-4xl">
+              Welcome back, {user.name}
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
+              This workspace is only available after login. Manage your availability, upcoming bookings, and Google Calendar connection from one secure place.
+            </p>
+            <p className="mt-4 text-sm text-slate-600">
+              Share your booking page at{" "}
+              <Link className="font-semibold text-brand" href={`/book/${user.username}`}>
+                /book/{user.username}
+              </Link>
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3 xl:justify-end">
+            <a
+              className="inline-flex items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-teal-700"
+              href={bookingUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              Open booking page
+            </a>
+            <a href="/api/google/connect">
+              <Button variant="ghost">
+                {user.googleRefreshToken ? "Switch Google Calendar Account" : "Connect Google Calendar"}
+              </Button>
+            </a>
+            {user.googleRefreshToken ? (
+              <a href="/api/google/disconnect">
+                <Button variant="ghost">Disconnect Google Calendar</Button>
+              </a>
+            ) : null}
+            <LogoutButton />
+          </div>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <a
-            className="inline-flex items-center justify-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700"
-            href={bookingUrl}
-            rel="noreferrer"
-            target="_blank"
-          >
-            Open booking page
-          </a>
-          <a href="/api/google/connect">
-            <Button variant="ghost">
-              {user.googleRefreshToken ? "Reconnect Google Calendar" : "Connect Google Calendar"}
-            </Button>
-          </a>
-          <LogoutButton />
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-3xl border border-slate-200 bg-white/90 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Access</p>
+            <p className="mt-2 text-lg font-semibold text-ink">Protected</p>
+          </div>
+          <div className="rounded-3xl border border-slate-200 bg-white/90 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Calendar</p>
+            <p className="mt-2 text-lg font-semibold text-ink">{user.googleRefreshToken ? "Connected" : "Not connected"}</p>
+          </div>
+          <div className="rounded-3xl border border-slate-200 bg-white/90 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Booking link</p>
+            <p className="mt-2 truncate text-sm font-semibold text-ink">/book/{user.username}</p>
+          </div>
         </div>
       </Card>
 
       {params?.google === "connected" ? (
-        <Card className="border-brand/20 bg-teal-50">
+        <Card className="animate-fade-up rounded-3xl border-brand/20 bg-teal-50">
           <p className="text-sm font-medium text-brand">Google Calendar is connected and future bookings will create calendar events.</p>
         </Card>
       ) : null}
 
-      {params?.google === "error" ? (
-        <Card className="border-rose-200 bg-rose-50">
-          <p className="text-sm font-medium text-rose-700">Google Calendar connection failed. Please verify your OAuth settings and try again.</p>
+      {params?.google === "disconnected" ? (
+        <Card className="animate-fade-up rounded-3xl border-slate-200 bg-slate-50">
+          <p className="text-sm font-medium text-slate-700">Google Calendar was disconnected. You can now connect a different Google account.</p>
         </Card>
       ) : null}
 
-      <div className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
+      {params?.google === "error" ? (
+        <Card className="animate-fade-up rounded-3xl border-rose-200 bg-rose-50">
+          <p className="text-sm font-medium text-rose-700">
+            Google Calendar connection failed. If Google shows `redirect_uri_mismatch`, add this exact callback URL in Google Cloud OAuth settings:
+          </p>
+          <p className="mt-2 break-all text-sm font-semibold text-rose-800">{googleRedirectUri}</p>
+        </Card>
+      ) : null}
+
+      <div className="grid gap-8 xl:grid-cols-[1.08fr_0.92fr]">
         <AvailabilityForm initialAvailability={availability} />
         <BookingList bookings={bookings} />
       </div>
