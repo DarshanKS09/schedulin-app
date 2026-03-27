@@ -21,7 +21,9 @@ export function getGoogleAuthUrl() {
 
   return client.generateAuthUrl({
     access_type: "offline",
-    prompt: "consent",
+    // Force Google's account chooser so reconnecting does not silently reuse
+    // the browser's current primary Google session.
+    prompt: "select_account consent",
     scope: ["https://www.googleapis.com/auth/calendar.events"],
   });
 }
