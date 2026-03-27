@@ -24,6 +24,21 @@ export function AutoLogoutMonitor() {
       window.localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
     }
 
+    function sendLogoutBeacon() {
+      if (loggingOutRef.current) {
+        return;
+      }
+
+      loggingOutRef.current = true;
+      window.localStorage.removeItem(LAST_ACTIVITY_KEY);
+
+      const payload = new Blob([JSON.stringify({ reason: "page_exit" })], {
+        type: "application/json",
+      });
+
+      navigator.sendBeacon("/api/auth/logout", payload);
+    }
+
     async function forceLogout() {
       if (loggingOutRef.current) {
         return;
@@ -65,6 +80,10 @@ export function AutoLogoutMonitor() {
       }
     }
 
+    function handlePageHide() {
+      sendLogoutBeacon();
+    }
+
     const activityEvents: Array<keyof WindowEventMap> = ["mousemove", "mousedown", "keydown", "scroll", "touchstart", "focus"];
 
     recordActivity();
@@ -76,6 +95,7 @@ export function AutoLogoutMonitor() {
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("storage", handleStorage);
+    window.addEventListener("pagehide", handlePageHide);
 
     const interval = window.setInterval(checkInactivity, CHECK_INTERVAL_MS);
 
@@ -86,6 +106,7 @@ export function AutoLogoutMonitor() {
 
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("pagehide", handlePageHide);
       window.clearInterval(interval);
     };
   }, [pathname, router]);
