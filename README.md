@@ -39,6 +39,7 @@ Copy `.env.example` to `.env` and fill in the values:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/echo_scheduler?schema=public"
+DIRECT_URL="postgresql://postgres:postgres@localhost:5432/echo_scheduler?schema=public"
 JWT_SECRET="replace-with-a-long-random-secret"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
@@ -48,6 +49,15 @@ GOOGLE_REDIRECT_URI="http://localhost:3000/api/google/callback"
 
 OPENAI_API_KEY=""
 ```
+
+If you use Supabase, set:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@aws-REGION.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1&sslmode=require"
+DIRECT_URL="postgresql://USER:PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres?sslmode=require"
+```
+
+The pooled `DATABASE_URL` needs `pgbouncer=true` for Prisma, otherwise dashboard queries can fail with errors like `prepared statement "... does not exist"`.
 
 ## Local setup
 
