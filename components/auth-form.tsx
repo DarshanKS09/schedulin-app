@@ -3,8 +3,9 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 
+import { dispatchAuthLoader } from "@/components/auth-transition-loader";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,34 +16,21 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!loading) {
-      setProgress(0);
-      return;
-    }
-
-    const interval = window.setInterval(() => {
-      setProgress((current) => {
-        if (current >= 92) {
-          return current;
-        }
-
-        const increment = current < 40 ? 9 : current < 70 ? 5 : 2;
-        return Math.min(current + increment, 92);
-      });
-    }, 140);
-
-    return () => window.clearInterval(interval);
-  }, [loading]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
-    setProgress(8);
     setError(null);
+
+    const nextPath = searchParams.get("next");
+    const destination = nextPath?.startsWith("/") ? nextPath : "/dashboard";
+
+    dispatchAuthLoader({
+      type: "start",
+      destination,
+      label: mode === "register" ? "Creating your workspace" : "Signing you in",
+    });
 
     const formData = new FormData(event.currentTarget);
     const payload =
@@ -73,12 +61,11 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         throw new Error(result.error || "Unable to continue.");
       }
 
-      setProgress(100);
-      const nextPath = searchParams.get("next");
-      const destination = nextPath?.startsWith("/") ? nextPath : "/dashboard";
+      dispatchAuthLoader({ type: "resolved" });
       router.push(destination as Route);
       router.refresh();
     } catch (submitError) {
+      dispatchAuthLoader({ type: "error" });
       setError(submitError instanceof Error ? submitError.message : "Unable to continue.");
     } finally {
       setLoading(false);
@@ -121,21 +108,6 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
             {mode === "register" ? "Start taking bookings" : "Sign in to your dashboard"}
           </h2>
         </div>
-
-        {loading ? (
-          <div className="mb-5">
-            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-[#4285F4]">
-              <span>{mode === "register" ? "Creating workspace" : "Signing you in"}</span>
-              <span>{progress}%</span>
-            </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#E8F0FE]">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-[#4285F4] via-[#34A853] to-[#FBBC05] transition-all duration-200"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-        ) : null}
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           {mode === "register" ? <Input name="name" placeholder="Full name" required /> : null}
