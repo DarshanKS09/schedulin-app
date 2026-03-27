@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String         @id @default(cuid())
+  name               String
+  username           String         @unique
+  email              String         @unique
+  passwordHash       String
+  googleAccessToken  String?
+  googleRefreshToken String?
+  googleTokenExpiry  DateTime?
+  googleCalendarId   String?        @default("primary")
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  availability       Availability[]
+  hostedBookings     Booking[]      @relation("HostedBookings")
+
+  @@index([username])
+}
+
+model Availability {
+  id         String   @id @default(cuid())
+  userId     String
+  dayOfWeek  Int
+  startTime  String
+  endTime    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, dayOfWeek])
+  @@unique([userId, dayOfWeek, startTime, endTime])
+}
+
+model Booking {
+  id             String   @id @default(cuid())
+  hostId         String
+  guestName      String
+  guestEmail     String
+  meetingTitle   String?
+  meetingNotes   String?
+  googleEventId  String?
+  startTime      DateTime
+  endTime        DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  host           User     @relation("HostedBookings", fields: [hostId], references: [id], onDelete: Cascade)
+
+  @@index([hostId, startTime])
+  @@index([hostId, endTime])
+  @@unique([hostId, startTime, endTime])
+}
