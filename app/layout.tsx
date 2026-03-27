@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import Link from "next/link";
 
+import { AutoLogoutMonitor } from "@/components/auto-logout-monitor";
 import { getSessionFromCookies } from "@/lib/auth";
 import { LogoutButton } from "@/components/logout-button";
 
@@ -23,6 +24,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="en">
       <body className={geist.variable}>
+        {session ? <AutoLogoutMonitor /> : null}
         <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-5 sm:px-6 lg:px-8">
           <header className="animate-fade-up mb-8">
             <div className="glass-panel mx-auto flex flex-col gap-4 rounded-[28px] px-5 py-4 shadow-[0_20px_80px_rgba(15,23,42,0.06)] sm:flex-row sm:items-center sm:justify-between">
