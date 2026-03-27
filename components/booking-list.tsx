@@ -2,7 +2,17 @@ import type { Booking } from "@prisma/client";
 
 import { Card } from "@/components/ui/card";
 
-export function BookingList({ bookings }: { bookings: Booking[] }) {
+function getGoogleCalendarEventUrl(eventId: string) {
+  return `https://calendar.google.com/calendar/u/0/r/eventedit/${encodeURIComponent(eventId)}`;
+}
+
+export function BookingList({
+  bookings,
+  googleCalendarConnected,
+}: {
+  bookings: Booking[];
+  googleCalendarConnected: boolean;
+}) {
   return (
     <Card className="animate-fade-up-delay border-[rgba(251,188,5,0.16)] bg-gradient-to-b from-white to-[#FFF9E8]">
       <div className="mb-5">
@@ -21,11 +31,23 @@ export function BookingList({ bookings }: { bookings: Booking[] }) {
                 <p className="font-semibold text-ink">{booking.guestName}</p>
                 <p className="text-sm text-slate-600">{booking.guestEmail}</p>
               </div>
-              <div className="text-sm text-slate-600">
-                {new Intl.DateTimeFormat(undefined, {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                }).format(new Date(booking.startTime))}
+              <div className="flex flex-col items-start gap-3 text-sm text-slate-600 md:items-end">
+                <div>
+                  {new Intl.DateTimeFormat(undefined, {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }).format(new Date(booking.startTime))}
+                </div>
+                {googleCalendarConnected && booking.googleEventId ? (
+                  <a
+                    className="inline-flex items-center justify-center rounded-full border border-indigo-200 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-700 transition duration-200 hover:-translate-y-0.5 hover:border-indigo-400 hover:bg-indigo-50"
+                    href={getGoogleCalendarEventUrl(booking.googleEventId)}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    View on calendar
+                  </a>
+                ) : null}
               </div>
             </div>
           ))

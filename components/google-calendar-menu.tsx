@@ -37,7 +37,6 @@ export function GoogleCalendarMenu({ connected }: { connected: boolean }) {
         <div className="absolute right-0 top-14 z-20 w-64 rounded-3xl border border-[rgba(52,168,83,0.16)] bg-white/95 p-4 shadow-[0_24px_48px_rgba(23,50,83,0.16)] backdrop-blur">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#34A853]">Google Calendar</p>
           <p className="mt-2 text-sm font-semibold text-ink">Connected and ready</p>
-          <p className="mt-1 text-sm text-slate-600">Use this menu to switch accounts or disconnect calendar sync.</p>
 
           <div className="mt-4 flex flex-col gap-2">
             <Button className="w-full" onClick={beginGoogleConnect} type="button" variant="secondary">

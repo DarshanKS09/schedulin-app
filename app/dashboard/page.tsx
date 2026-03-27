@@ -53,13 +53,7 @@ export default async function DashboardPage({
               Welcome back, {user.name}
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-              This workspace is only available after login. Manage your availability, upcoming bookings, and Google Calendar connection from one secure place.
-            </p>
-            <p className="mt-4 text-sm text-slate-600">
-              Share your booking page at{" "}
-              <Link className="font-semibold text-brand" href={`/book/${user.username}`}>
-                /book/{user.username}
-              </Link>
+              Manage your availability, review guest bookings, and keep your booking link ready to share from one secure workspace.
             </p>
           </div>
 
@@ -120,7 +114,7 @@ export default async function DashboardPage({
 
       <div className="grid gap-8 xl:grid-cols-[1.08fr_0.92fr]">
         <AvailabilityForm initialAvailability={availability} />
-        <BookingList bookings={bookings} />
+        <BookingList bookings={bookings} googleCalendarConnected={Boolean(user.googleRefreshToken)} />
       </div>
     </div>
   );
