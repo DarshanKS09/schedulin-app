@@ -159,3 +159,32 @@ export async function createGoogleCalendarEvent({
 
   return event.data.id ?? null;
 }
+
+export async function getGoogleCalendarEventHtmlLink({
+  userId,
+  eventId,
+}: {
+  userId: string;
+  eventId: string;
+}) {
+  const auth = await getAuthorizedClientForUser(userId);
+
+  if (!auth) {
+    return null;
+  }
+
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: {
+      googleCalendarId: true,
+    },
+  });
+
+  const calendar = google.calendar({ version: "v3", auth });
+  const event = await calendar.events.get({
+    calendarId: user?.googleCalendarId || "primary",
+    eventId,
+  });
+
+  return event.data.htmlLink ?? null;
+}

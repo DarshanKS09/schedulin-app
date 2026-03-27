@@ -4,7 +4,7 @@ import { jwtVerify } from "jose";
 
 import { SESSION_COOKIE } from "@/lib/session";
 
-const protectedPaths = ["/dashboard", "/api/availability", "/api/google/connect", "/api/google/disconnect"];
+const protectedPaths = ["/dashboard", "/api/availability", "/api/google/connect", "/api/google/disconnect", "/api/google/events"];
 const encoder = new TextEncoder();
 
 function getJwtSecret() {
@@ -57,5 +57,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/api/availability/:path*", "/api/google/connect", "/api/google/disconnect"],
+  matcher: ["/dashboard/:path*", "/api/availability/:path*", "/api/google/connect", "/api/google/disconnect", "/api/google/events/:path*"],
 };
