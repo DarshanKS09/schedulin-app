@@ -27,8 +27,8 @@ export async function GET(request: Request) {
 
   try {
     const tokens = await exchangeGoogleCodeForTokens(code);
-    await saveGoogleTokensForUser(session.sub, tokens);
-    return NextResponse.redirect(new URL("/dashboard?google=connected", request.url));
+    const isConnected = await saveGoogleTokensForUser(session.sub, tokens);
+    return NextResponse.redirect(new URL(`/dashboard?google=${isConnected ? "connected" : "error"}`, request.url));
   } catch {
     return NextResponse.redirect(new URL("/dashboard?google=error", request.url));
   }

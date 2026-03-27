@@ -25,9 +25,9 @@ export function getGoogleAuthUrl(state?: string) {
   return client.generateAuthUrl({
     access_type: "offline",
     include_granted_scopes: false,
-    // Force Google's account chooser instead of silently reusing the browser's
-    // currently active Google session.
-    prompt: "select_account",
+    // Ask for account selection and consent so Google returns a refresh token
+    // reliably for the saved Calendar connection.
+    prompt: "consent select_account",
     scope: ["https://www.googleapis.com/auth/calendar.events"],
     state,
   });
@@ -40,15 +40,29 @@ export async function exchangeGoogleCodeForTokens(code: string) {
 }
 
 export async function saveGoogleTokensForUser(userId: string, tokens: Awaited<ReturnType<typeof exchangeGoogleCodeForTokens>>) {
-  await db.user.update({
+  const existingUser = await db.user.findUnique({
+    where: { id: userId },
+    select: {
+      googleRefreshToken: true,
+    },
+  });
+
+  const nextRefreshToken = tokens.refresh_token ?? existingUser?.googleRefreshToken ?? null;
+
+  const updatedUser = await db.user.update({
     where: { id: userId },
     data: {
       googleAccessToken: tokens.access_token ?? undefined,
-      googleRefreshToken: tokens.refresh_token ?? undefined,
+      googleRefreshToken: nextRefreshToken,
       googleTokenExpiry: tokens.expiry_date ? new Date(tokens.expiry_date) : undefined,
-      googleCalendarId: "primary",
+      googleCalendarId: nextRefreshToken ? "primary" : null,
+    },
+    select: {
+      googleRefreshToken: true,
     },
   });
+
+  return Boolean(updatedUser.googleRefreshToken);
 }
 
 export async function disconnectGoogleCalendar(userId: string) {

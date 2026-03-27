@@ -64,14 +64,6 @@ export default async function DashboardPage({
           </div>
 
           <div className="flex flex-wrap gap-3 xl:justify-end">
-            <a
-              className="inline-flex items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-teal-700"
-              href={bookingUrl}
-              rel="noreferrer"
-              target="_blank"
-            >
-              Open booking page
-            </a>
             <GoogleCalendarMenu connected={Boolean(user.googleRefreshToken)} />
           </div>
         </div>
