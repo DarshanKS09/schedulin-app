@@ -1,6 +1,7 @@
 import type { Booking } from "@prisma/client";
 
 import { Card } from "@/components/ui/card";
+import { ViewCalendarButton } from "@/components/view-calendar-button";
 
 export function BookingList({
   bookings,
@@ -35,14 +36,7 @@ export function BookingList({
                   }).format(new Date(booking.startTime))}
                 </div>
                 {googleCalendarConnected && booking.googleEventId ? (
-                  <a
-                    className="inline-flex items-center justify-center rounded-full border border-indigo-200 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-700 transition duration-200 hover:-translate-y-0.5 hover:border-indigo-400 hover:bg-indigo-50"
-                    href={`/api/google/events/${booking.googleEventId}`}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    View on calendar
-                  </a>
+                  <ViewCalendarButton eventId={booking.googleEventId} />
                 ) : null}
               </div>
             </div>
