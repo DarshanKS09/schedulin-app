@@ -54,6 +54,7 @@ model Booking {
   updatedAt      DateTime @updatedAt
   host           User     @relation("HostedBookings", fields: [hostId], references: [id], onDelete: Cascade)
 
+  @@unique([hostId, startTime])
   @@index([hostId, startTime])
   @@index([hostId, endTime])
   @@unique([hostId, startTime, endTime])

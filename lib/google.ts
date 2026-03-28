@@ -118,6 +118,7 @@ async function getAuthorizedClientForUser(userId: string) {
 
 export async function createGoogleCalendarEvent({
   userId,
+  hostEmail,
   calendarId,
   summary,
   description,
@@ -126,6 +127,7 @@ export async function createGoogleCalendarEvent({
   attendeeEmail,
 }: {
   userId: string;
+  hostEmail: string;
   calendarId?: string | null;
   summary: string;
   description: string;
@@ -142,6 +144,8 @@ export async function createGoogleCalendarEvent({
   const calendar = google.calendar({ version: "v3", auth });
   const event = await calendar.events.insert({
     calendarId: calendarId || "primary",
+    conferenceDataVersion: 1,
+    sendUpdates: "all",
     requestBody: {
       summary,
       description,
@@ -153,7 +157,15 @@ export async function createGoogleCalendarEvent({
         dateTime: endTime,
         timeZone: "UTC",
       },
-      attendees: [{ email: attendeeEmail }],
+      attendees: [{ email: hostEmail }, { email: attendeeEmail }],
+      conferenceData: {
+        createRequest: {
+          requestId: `slotify-${userId}-${Date.now()}`,
+          conferenceSolutionKey: {
+            type: "hangoutsMeet",
+          },
+        },
+      },
     },
   });
 

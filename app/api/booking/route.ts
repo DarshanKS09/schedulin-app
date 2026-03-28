@@ -8,14 +8,25 @@ import { generateMeetingDescription } from "@/lib/openai";
 import { isSlotBooked, isSlotInsideAvailability } from "@/lib/slots";
 import { bookingSchema } from "@/lib/validators";
 
+const SLOT_DURATION_MS = 30 * 60 * 1000;
+
 export async function POST(request: Request) {
   try {
     const body = bookingSchema.parse(await request.json());
     const startTime = new Date(body.startTime);
     const endTime = new Date(body.endTime);
+    const durationMs = endTime.getTime() - startTime.getTime();
 
     if (Number.isNaN(startTime.getTime()) || Number.isNaN(endTime.getTime()) || startTime >= endTime) {
       return NextResponse.json({ error: "Invalid booking time range." }, { status: 400 });
+    }
+
+    if (startTime <= new Date()) {
+      return NextResponse.json({ error: "Past bookings are not allowed." }, { status: 400 });
+    }
+
+    if (durationMs !== SLOT_DURATION_MS) {
+      return NextResponse.json({ error: "Bookings must be exactly 30 minutes long." }, { status: 400 });
     }
 
     const host = await db.user.findUnique({
@@ -27,6 +38,10 @@ export async function POST(request: Request) {
 
     if (!host) {
       return NextResponse.json({ error: "Host not found." }, { status: 404 });
+    }
+
+    if (host.email.toLowerCase() === body.guestEmail.toLowerCase()) {
+      return NextResponse.json({ error: "Hosts cannot book time with themselves." }, { status: 400 });
     }
 
     if (!isSlotInsideAvailability(host.availability, startTime, endTime)) {
@@ -86,6 +101,7 @@ export async function POST(request: Request) {
     try {
       const googleEventId = await createGoogleCalendarEvent({
         userId: host.id,
+        hostEmail: host.email,
         calendarId: host.googleCalendarId,
         summary: title,
         description: meetingNotes,
