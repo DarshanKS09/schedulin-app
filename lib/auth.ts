@@ -3,7 +3,14 @@ import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 
 import { db } from "@/lib/db";
-import { SESSION_COOKIE } from "@/lib/session";
+import {
+  SESSION_COOKIE,
+  SESSION_DURATION_MINUTES,
+  SESSION_DURATION_SECONDS,
+  SESSION_EXPIRY_COOKIE,
+  SESSION_EXPIRY_NOTICE_SECONDS,
+  getSessionExpiryTimestamp,
+} from "@/lib/session";
 const encoder = new TextEncoder();
 
 type SessionPayload = {
@@ -26,15 +33,25 @@ export async function createSessionToken(payload: SessionPayload) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime(`${SESSION_DURATION_MINUTES}m`)
     .sign(getJwtSecret());
 }
 
 export async function setSessionCookie(token: string) {
   const cookieStore = await cookies();
+  const expiresAt = getSessionExpiryTimestamp();
 
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
+    maxAge: SESSION_DURATION_SECONDS,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+  });
+
+  cookieStore.set(SESSION_EXPIRY_COOKIE, String(expiresAt), {
+    httpOnly: false,
+    maxAge: SESSION_EXPIRY_NOTICE_SECONDS,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
@@ -44,6 +61,7 @@ export async function setSessionCookie(token: string) {
 export async function clearSessionCookie() {
   const cookieStore = await cookies();
   cookieStore.delete(SESSION_COOKIE);
+  cookieStore.delete(SESSION_EXPIRY_COOKIE);
 }
 
 export async function verifySessionToken(token: string) {

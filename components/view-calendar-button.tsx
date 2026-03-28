@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { getSessionExpiredRedirectPath } from "@/lib/session";
+
 type ViewCalendarButtonProps = {
   eventId: string;
 };
@@ -22,7 +24,8 @@ export function ViewCalendarButton({ eventId }: ViewCalendarButtonProps) {
       });
 
       if (response.status === 401) {
-        window.location.href = "/auth/login?next=/dashboard";
+        const result = (await response.json()) as { code?: string };
+        window.location.href = result.code === "SESSION_EXPIRED" ? getSessionExpiredRedirectPath("/dashboard") : "/auth/login?next=/dashboard";
         return;
       }
 

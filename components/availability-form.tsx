@@ -1,10 +1,13 @@
 "use client";
 
+import type { Route } from "next";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { getSessionExpiredRedirectPath } from "@/lib/session";
 import { formatTimeLabel } from "@/lib/utils";
 
 type AvailabilityItem = {
@@ -17,6 +20,7 @@ type AvailabilityItem = {
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export function AvailabilityForm({ initialAvailability }: { initialAvailability: AvailabilityItem[] }) {
+  const router = useRouter();
   const [availability, setAvailability] = useState<AvailabilityItem[]>(
     initialAvailability.length
       ? initialAvailability
@@ -59,6 +63,18 @@ export function AvailabilityForm({ initialAvailability }: { initialAvailability:
         },
         body: JSON.stringify({ availability }),
       });
+
+      if (response.status === 401) {
+        const result = (await response.json()) as { code?: string; error?: string };
+
+        if (result.code === "SESSION_EXPIRED") {
+          router.replace(getSessionExpiredRedirectPath("/dashboard") as Route);
+          router.refresh();
+          return;
+        }
+
+        throw new Error(result.error || "Please log in again.");
+      }
 
       const result = await response.json();
 
