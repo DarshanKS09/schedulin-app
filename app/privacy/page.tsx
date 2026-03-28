@@ -78,7 +78,7 @@ export default function PrivacyPage() {
         <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
         <p className="mb-4 leading-relaxed">
           If you have questions about this Privacy Policy or want to request access, correction, or deletion of your
-          data, please contact us at <a className="text-brand hover:text-teal-700" href="mailto:privacy@example.com">privacy@example.com</a>.
+          data, please contact us at <a className="text-brand hover:text-teal-700" href="mailto:darshuks09@gmail.com">darshuks09@gmail.com</a>.
         </p>
       </section>
 
