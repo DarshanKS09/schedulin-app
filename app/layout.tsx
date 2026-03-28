@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { Route } from "next";
 import { Geist } from "next/font/google";
 import Link from "next/link";
 
@@ -70,6 +71,16 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           </header>
 
           <main className="flex-1 pb-8">{children}</main>
+          <footer className="border-t border-white/60 py-6 text-sm text-slate-600">
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link className="hover:text-ink" href={"/privacy" as Route}>
+                Privacy Policy
+              </Link>
+              <Link className="hover:text-ink" href={"/terms" as Route}>
+                Terms
+              </Link>
+            </div>
+          </footer>
         </div>
       </body>
     </html>
