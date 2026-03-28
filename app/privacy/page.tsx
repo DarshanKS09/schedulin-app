@@ -29,13 +29,20 @@ export default function PrivacyPage() {
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Google Data Usage</h2>
         <p className="mb-4 leading-relaxed">
-          When you connect Google Calendar, Slotify only uses Google Calendar data to create events related to your
-          bookings and to let you view those events. We do not store unnecessary Google data, and we do not use Google
-          Calendar data for advertising, resale, or unrelated profiling.
+          When you connect your Google Calendar, Slotify uses Google Calendar data strictly to create calendar events
+          on your behalf when bookings are made.
         </p>
         <p className="mb-4 leading-relaxed">
-          We do not share or sell user data, including Google user data. Access to Google Calendar is limited to the
-          minimum functionality needed to support meeting scheduling and calendar event creation.
+          We do NOT:
+        </p>
+        <p className="mb-4 leading-relaxed">
+          Read, access, or store your existing calendar events
+          <br />
+          Modify or delete any existing events
+          <br />
+          Use your Google data for advertising, analytics, or profiling
+          <br />
+          Share your Google data with third parties
         </p>
       </section>
 
@@ -46,6 +53,20 @@ export default function PrivacyPage() {
           calendar features of the service. Data may be processed by infrastructure providers that support hosting,
           storage, and secure application operations.
         </p>
+        <p className="mb-4 leading-relaxed">
+          We do NOT sell, rent, or trade your personal data to any third parties.
+        </p>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Third-Party Services</h2>
+        <p className="mb-4 leading-relaxed">
+          We use the following third-party services:
+          <br />
+          Google Calendar API (for event creation)
+          <br />
+          Vercel (for hosting and infrastructure)
+        </p>
       </section>
 
       <section className="mb-8">
@@ -54,6 +75,10 @@ export default function PrivacyPage() {
           We use secure storage, encrypted connections, authenticated access controls, and other industry-standard
           security practices designed to protect user information. While no system can guarantee absolute security, we
           take reasonable measures to safeguard the data we process.
+        </p>
+        <p className="mb-4 leading-relaxed">
+          Google OAuth tokens are securely stored on our servers and are never exposed to the client. These tokens are
+          used only to authenticate requests to Google Calendar for event creation.
         </p>
       </section>
 
@@ -85,8 +110,9 @@ export default function PrivacyPage() {
       <section>
         <h2 className="text-2xl font-semibold mb-4">Compliance Statement</h2>
         <p className="mb-4 leading-relaxed">
-          We comply with the Google API Services User Data Policy. Google user data is accessed and used only to
-          provide user-facing functionality directly related to scheduling and calendar event management.
+          Slotify complies with the Google API Services User Data Policy, including the Limited Use requirements. We
+          only use Google user data to provide and improve user-facing features directly related to scheduling and
+          calendar event creation.
         </p>
       </section>
     </div>

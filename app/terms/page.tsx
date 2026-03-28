@@ -21,6 +21,10 @@ export default function TermsPage() {
           Slotify provides a scheduling service that allows hosts to define availability, receive bookings, and create
           calendar events. The service may include integrations with third-party providers such as Google Calendar.
         </p>
+        <p className="mb-4 leading-relaxed">
+          This service may depend on third-party providers such as Google Calendar, and we are not responsible for
+          failures caused by these services.
+        </p>
       </section>
 
       <section className="mb-8">
